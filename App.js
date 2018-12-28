@@ -3,27 +3,49 @@ import { StyleSheet, View, Button } from 'react-native';
 import { BarCodeScanner } from 'expo';
 
 export default class App extends React.Component {
-  render() {
-    return (
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-        <BarCodeScanner
-          onBarCodeRead={(scan) => alert(scan.data)}
-          style={[StyleSheet.absoluteFill, styles.container]}
-        >
-          <View style={styles.layerTop} />
-          <View style={styles.layerCenter}>
-            <View style={styles.layerLeft} />
-            <View style={[styles.focused, { borderWidth: 3, borderColor: 'white' }]} />
-            <View style={styles.layerRight} />
-          </View>
-          <View style={styles.layerBottom} />
-        </BarCodeScanner>
-        <View style={{ alignSelf: 'flex-end' }}>
-          <Button onPress={() => alert('Aquí se deberia renderizar la vista que lee el código que se insertará de forma manual')} title="Insertar código manualmente" />
+
+  state = {
+    open: false,
+  }
+
+  onBarCodeRead = (scan) => {
+    alert(scan.data);
+    this.setState({ open: false });
+  }
+
+  renderScanner = () => (
+    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+      <BarCodeScanner
+        onBarCodeRead={this.onBarCodeRead}
+        style={[StyleSheet.absoluteFill, styles.container]}
+      >
+        <View style={styles.layerTop} />
+        <View style={styles.layerCenter}>
+          <View style={styles.layerLeft} />
+          <View style={[styles.focused, { borderWidth: 3, borderColor: 'white' }]} />
+          <View style={styles.layerRight} />
         </View>
+        <View style={styles.layerBottom} />
+      </BarCodeScanner>
+      <View style={{ alignSelf: 'flex-end' }}>
+        <Button onPress={() => alert('Aquí se deberia renderizar la vista que lee el código que se insertará de forma manual')} title="Insertar código manualmente" />
+        <Button title="Cancelar" onPress={() => this.setState({ open: false })} />
       </View>
-      
-    );
+    </View>
+  );
+
+  render() {
+    if (this.state.open) {
+      return this.renderScanner();
+    }
+    return(
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <Button
+          title="Haga click aqui para abrir el escáner"
+          onPress={() => this.setState({ open: true })}
+        />
+      </View>
+    )
   }
 }
 
